@@ -1,5 +1,7 @@
 %{
 
+#include "config.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -10,6 +12,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "ast.h"
+#include "interpret.h"
 
 /* Globals */
 extern int lineno;
@@ -21,21 +25,61 @@ int yyerror(char* str);
 %}
  
 %union {
+	ast_node_t *ast;
 	double numbar;
+	char *yarn;
 };
 
 /* keywords */
 %token M_HAI M_KTHXBYE
 
+/* functions */
+%token M_VISIBLE
+
+/* special chars */
+%token M_EXCLAIM M_COMMA
 
 %token <numbar> M_NUMBAR
+%token <yarn> M_YARN
+
+%type <numbar> welcome
+%type <ast> program print stmt block
 
 %%
 
-program : welcome goodbye
+program : welcome block goodbye {
+					$$ = ast_node_alloc(M_PROGRAM);
+					$$->value.program.language_version = $1;
+					$$->next = $2;
+					interpret($$);
+					ast_node_free($$);
+				}
 	;
 
-welcome	: M_HAI M_NUMBAR
+block	: block stmt	{
+				ast_node_t *cur;
+				for (cur = $1; cur->next != NULL; cur = cur->next) {}
+				cur->next = $2;
+				$$ = $1;
+			}
+	| stmt { $$ = $1; }
+	;
+
+stmt	: print { $$ = $1; }
+	;
+
+print	: M_VISIBLE M_YARN M_EXCLAIM 	{
+						$$ = ast_node_alloc(M_PRINT);
+						$$->value.print.yarn = $2;
+						$$->value.print.newline = 0;
+					}
+	| M_VISIBLE M_YARN		{
+						$$ = ast_node_alloc(M_PRINT);
+						$$->value.print.yarn = $2;
+						$$->value.print.newline = 1;
+					}
+	;
+welcome	: M_HAI M_NUMBAR { $$ = $2; }
 	;
 
 goodbye	: M_KTHXBYE

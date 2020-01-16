@@ -7,12 +7,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ast.h"
 #include "parser.h"
 
 extern int lineno;
 void yyerror(char *);
 
-static void uncolon(char *s) {
+static char *uncolon(char *s) {
 	size_t i;
 	for (i = 0; i < strlen(s); i++) {
 		if (s[i] == ':' && ((i+1) < strlen(s))) {
@@ -27,6 +28,7 @@ static void uncolon(char *s) {
 			memmove(s+i+1, s+i+2, strlen(s+i+1));
 		}
 	}
+	return s;
 }
 
 
@@ -45,15 +47,14 @@ label {letter}({letter}|{digit})*
 
 numbar {digit}+\.{digit}+
 
+yarn \"(\\.|[^"\\])*\"
 
 newline "\n"
 carriagereturn "\r"
 tab "\t"
 space " "
 eol ({newline}|{carriagereturn}{newline})
-empty ({tab}|{space}|{carriagereturn}|{eol})
 ws ({tab}|{space})
-
 
 %option noinput
 %option nounput
@@ -63,6 +64,7 @@ ws ({tab}|{space})
 %%
 
 KTHXBYE		{ return M_KTHXBYE; }
+VISIBLE		{ return M_VISIBLE; }
 
 OBTW		{ BEGIN(OBTW); break; }
 <OBTW>TLDR{ws}[^\r\n]*	{ BEGIN(INITIAL); break; }
@@ -73,11 +75,21 @@ BTW{ws}[^\r\n]*	{ break; }
 
 HAI		{ return M_HAI; }
 
+"!"		{ return M_EXCLAIM; }
+","		{ return M_COMMA; }
+
 {numbar}	{ yylval.numbar = atof(yytext); return M_NUMBAR; }
+
+{yarn}		{
+			yylval.yarn = strdup(yytext+1);
+			yylval.yarn[strlen(yylval.yarn)-1] = '\0';
+			yylval.yarn = uncolon(yylval.yarn);
+			return M_YARN;
+		}
 
 {eol}		{ lineno++; break; }
 
-{empty}		{ /* skip whitespace */ break; }
+{ws}		{ /* skip whitespace */ break; }
 
 .		{
 			yyerror ("Invalid Syntax");

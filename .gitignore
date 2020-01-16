@@ -2,6 +2,8 @@
 Makefile
 Makefile.in
 aclocal.m4
+ast.o
+autom4te.cache/
 compile
 config.h
 config.in
@@ -11,6 +13,7 @@ config.status
 configure
 depcomp
 install-sh
+interpret.o
 minou
 missing
 parser.c
@@ -20,3 +23,4 @@ scanner.c
 scanner.o
 stamp-h1
 ylwrap
+*.tar.gz
