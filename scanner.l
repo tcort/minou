@@ -52,30 +52,32 @@ tab "\t"
 space " "
 eol ({newline}|{carriagereturn}{newline})
 empty ({tab}|{space}|{carriagereturn}|{eol})
+ws ({tab}|{space})
+
 
 %option noinput
 %option nounput
-%option caseless
+
+%x OBTW
 
 %%
 
-"HAI"		{ return M_HAI; }
-"KTHXBYE"	{ return M_KTHXBYE; }
+KTHXBYE		{ return M_KTHXBYE; }
 
-{numbar}	{
-			yylval.numbar = atof(yytext);
-			return M_NUMBAR;
-		}
+OBTW		{ BEGIN(OBTW); break; }
+<OBTW>TLDR{ws}[^\r\n]*	{ BEGIN(INITIAL); break; }
+<OBTW>{eol}	{ lineno++; break; }
+<OBTW>.		{ break; }
 
-{eol}		{
-			lineno++;
-			break;
-		}
+BTW{ws}[^\r\n]*	{ break; }
 
-{empty}		{
-			/* skip whitespace */
-			break;
-		}
+HAI		{ return M_HAI; }
+
+{numbar}	{ yylval.numbar = atof(yytext); return M_NUMBAR; }
+
+{eol}		{ lineno++; break; }
+
+{empty}		{ /* skip whitespace */ break; }
 
 .		{
 			yyerror ("Invalid Syntax");
