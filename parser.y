@@ -21,51 +21,24 @@ int yyerror(char* str);
 %}
  
 %union {
-	int number;
-	char *string;
+	double numbar;
 };
 
 /* keywords */
-%token M_PRINT M_EXIT
-%token M_COMMA M_PLUS M_MINUS M_TIMES M_DIVIDE M_OPAREN M_CPAREN M_COLON M_SEMI_COLON
+%token M_HAI M_KTHXBYE
 
 
-%token <number> M_NUMBER
-%token <string> M_STRING
-
-%type <number> expr signterm term factor
+%token <numbar> M_NUMBAR
 
 %%
 
-program : stmts
+program : welcome goodbye
 	;
 
-stmts	: stmts stmt
-	| stmt
+welcome	: M_HAI M_NUMBAR
 	;
 
-stmt	: M_PRINT M_OPAREN expr M_CPAREN M_SEMI_COLON { printf("%d", $3); }
-	| M_PRINT M_OPAREN M_STRING M_CPAREN M_SEMI_COLON { printf("%s", $3); }
-	| M_EXIT M_OPAREN expr M_CPAREN M_SEMI_COLON { exit($3); }
-	;
-
-term	: factor M_TIMES factor { $$ = $1 * $3; }
-	| factor M_DIVIDE factor { $$ = $1 / $3; }
-	| factor { $$ = $1; }
-	;
-
-expr	: signterm M_PLUS term { $$ = $1 + $3; }
-	| signterm M_MINUS term { $$ = $1 - $3; }
-	| signterm { $$ = $1; }
-	;
-
-signterm: M_PLUS term { $$ = 0 + $2; }
-	| M_MINUS term { $$ = 0 - $2; }
-	| term { $$ = $1; }
-	;
-
-factor	: M_NUMBER { $$ = $1; }
-	| M_OPAREN expr M_CPAREN { $$ = $2; }
+goodbye	: M_KTHXBYE
 	;
 
 %%

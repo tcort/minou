@@ -12,19 +12,16 @@
 extern int lineno;
 void yyerror(char *);
 
-static void unslash(char *s) {
+static void uncolon(char *s) {
 	size_t i;
 	for (i = 0; i < strlen(s); i++) {
-		if (s[i] == '\\' && ((i+1) < strlen(s))) {
+		if (s[i] == ':' && ((i+1) < strlen(s))) {
 			switch (s[i+1]) {
-				case '\\': s[i] = '\\'; break;
-				case 'a': s[i] = '\a'; break;
-				case 'b': s[i] = '\b'; break;
-				case 'f': s[i] = '\f'; break;
-				case 'n': s[i] = '\n'; break;
-				case 'r': s[i] = '\r'; break;
-				case 't': s[i] = '\t'; break;
-				case 'v': s[i] = '\v'; break;
+				case ')': s[i] = '\n'; break;
+				case '>': s[i] = '\t'; break;
+				case 'o': s[i] = '\a'; break;
+				case '"': s[i] = '"'; break;
+				case ':': s[i] = ':'; break;
 				default: break;
 			}
 			memmove(s+i+1, s+i+2, strlen(s+i+1));
@@ -46,8 +43,7 @@ letter [A-Za-z]
 digit [0-9]
 label {letter}({letter}|{digit})*
 
-number {digit}+
-string \"(\\.|[^"\\])*\"
+numbar {digit}+\.{digit}+
 
 
 newline "\n"
@@ -63,29 +59,12 @@ empty ({tab}|{space}|{carriagereturn}|{eol})
 
 %%
 
-"PRINT"		{ return M_PRINT; }
-"EXIT"		{ return M_EXIT; }
+"HAI"		{ return M_HAI; }
+"KTHXBYE"	{ return M_KTHXBYE; }
 
-","		{ return M_COMMA; }
-"+"		{ return M_PLUS; }
-"-"		{ return M_MINUS; }
-"*"		{ return M_TIMES; }
-"/"		{ return M_DIVIDE; }
-"("		{ return M_OPAREN; }
-")"		{ return M_CPAREN; }
-":"		{ return M_COLON; }
-";"		{ return M_SEMI_COLON; }
-
-{string}	{
-			yylval.string = strdup(yytext + 1);
-			yylval.string[strlen(yylval.string) - 1] = '\0';
-			unslash(yylval.string);
-			return M_STRING;
-		}
-
-{number}	{
-			yylval.number = atoi(yytext);
-			return M_NUMBER;
+{numbar}	{
+			yylval.numbar = atof(yytext);
+			return M_NUMBAR;
 		}
 
 {eol}		{
