@@ -21,19 +21,19 @@ int yyerror(char* str);
 %}
  
 %union {
-	char var;
 	int number;
 	char *string;
 };
 
 /* keywords */
-%token M_PRINT M_INPUT M_END M_GOTO M_GOSUB M_RETURN M_IF M_THEN M_LET
-%token M_COMMA M_PLUS M_MINUS M_TIMES M_DIVIDE M_OPAREN M_CPAREN M_EQUALS
-%token M_GTEQ M_GT M_LTEQ M_LT M_EQEQ M_NEQ
+%token M_PRINT M_EXIT
+%token M_COMMA M_PLUS M_MINUS M_TIMES M_DIVIDE M_OPAREN M_CPAREN M_COLON M_SEMI_COLON
 
-%token <var> M_VAR
+
 %token <number> M_NUMBER
 %token <string> M_STRING
+
+%type <number> expr signterm term factor
 
 %%
 
@@ -44,60 +44,28 @@ stmts	: stmts stmt
 	| stmt
 	;
 
-stmt	: M_PRINT exprs
-	| M_IF expr relop expr M_THEN stmt
-	| M_LET M_VAR M_EQUALS expr
-	| M_INPUT vars
-	| M_GOTO expr
-	| M_GOSUB expr
-	| M_RETURN
-	| M_END
+stmt	: M_PRINT M_OPAREN expr M_CPAREN M_SEMI_COLON { printf("%d", $3); }
+	| M_PRINT M_OPAREN M_STRING M_CPAREN M_SEMI_COLON { printf("%s", $3); }
+	| M_EXIT M_OPAREN expr M_CPAREN M_SEMI_COLON { exit($3); }
 	;
 
-vars	: vars M_COMMA M_VAR
-	| M_VAR
+term	: factor M_TIMES factor { $$ = $1 * $3; }
+	| factor M_DIVIDE factor { $$ = $1 / $3; }
+	| factor { $$ = $1; }
 	;
 
-exprs	: exprs M_COMMA prelem
-	| prelem
+expr	: signterm M_PLUS term { $$ = $1 + $3; }
+	| signterm M_MINUS term { $$ = $1 - $3; }
+	| signterm { $$ = $1; }
 	;
 
-prelem	: M_STRING
-	| expr
+signterm: M_PLUS term { $$ = 0 + $2; }
+	| M_MINUS term { $$ = 0 - $2; }
+	| term { $$ = $1; }
 	;
 
-term	: factor mulop factor
-	| factor
-	;
-
-mulop	: M_TIMES
-	| M_DIVIDE
-	;
-
-addop	: M_PLUS
-	| M_MINUS
-	;
-
-relop	: M_GTEQ
-	| M_GT
-	| M_LTEQ
-	| M_LT
-	| M_EQEQ
-	| M_NEQ
-	;
-
-expr	: signterm addop term
-	| signterm
-	;
-
-signterm: M_PLUS term
-	| M_MINUS term
-	| term
-	;
-
-factor	: M_VAR
-	| M_NUMBER
-	| M_OPAREN expr M_CPAREN
+factor	: M_NUMBER { $$ = $1; }
+	| M_OPAREN expr M_CPAREN { $$ = $2; }
 	;
 
 %%

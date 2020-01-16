@@ -12,6 +12,27 @@
 extern int lineno;
 void yyerror(char *);
 
+static void unslash(char *s) {
+	size_t i;
+	for (i = 0; i < strlen(s); i++) {
+		if (s[i] == '\\' && ((i+1) < strlen(s))) {
+			switch (s[i+1]) {
+				case '\\': s[i] = '\\'; break;
+				case 'a': s[i] = '\a'; break;
+				case 'b': s[i] = '\b'; break;
+				case 'f': s[i] = '\f'; break;
+				case 'n': s[i] = '\n'; break;
+				case 'r': s[i] = '\r'; break;
+				case 't': s[i] = '\t'; break;
+				case 'v': s[i] = '\v'; break;
+				default: break;
+			}
+			memmove(s+i+1, s+i+2, strlen(s+i+1));
+		}
+	}
+}
+
+
 #define YY_INPUT(buf,result,max_size) \
 	{ \
 		int c = fgetc(yyin); \
@@ -23,8 +44,8 @@ void yyerror(char *);
 
 letter [A-Za-z]
 digit [0-9]
+label {letter}({letter}|{digit})*
 
-var {letter}
 number {digit}+
 string \"(\\.|[^"\\])*\"
 
@@ -42,22 +63,8 @@ empty ({tab}|{space}|{carriagereturn}|{eol})
 
 %%
 
-"RETURN"	{ return M_RETURN; }
-"GOSUB"		{ return M_GOSUB; }
-"INPUT"		{ return M_INPUT; }
 "PRINT"		{ return M_PRINT; }
-"GOTO"		{ return M_GOTO; }
-"THEN"		{ return M_THEN; }
-"END"		{ return M_END; }
-"LET"		{ return M_LET; }
-"IF"		{ return M_IF; }
-
-">="		{ return M_GTEQ; }
-">"		{ return M_GT; }
-"<="		{ return M_LTEQ; }
-"<"		{ return M_LT; }
-"=="		{ return M_EQEQ; }
-"!="		{ return M_NEQ; }
+"EXIT"		{ return M_EXIT; }
 
 ","		{ return M_COMMA; }
 "+"		{ return M_PLUS; }
@@ -66,21 +73,19 @@ empty ({tab}|{space}|{carriagereturn}|{eol})
 "/"		{ return M_DIVIDE; }
 "("		{ return M_OPAREN; }
 ")"		{ return M_CPAREN; }
-"="		{ return M_EQUALS; }
+":"		{ return M_COLON; }
+";"		{ return M_SEMI_COLON; }
 
 {string}	{
-			yylval.string = strdup(yytext);
+			yylval.string = strdup(yytext + 1);
+			yylval.string[strlen(yylval.string) - 1] = '\0';
+			unslash(yylval.string);
 			return M_STRING;
 		}
 
 {number}	{
 			yylval.number = atoi(yytext);
 			return M_NUMBER;
-		}
-
-{var}		{
-			yylval.var = yytext[0];
-			return M_VAR;
 		}
 
 {eol}		{
