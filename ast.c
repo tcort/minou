@@ -23,6 +23,12 @@ void ast_node_free(ast_node_t *node) {
 	}
 
 	switch (node->type) {
+		case M_DECL:
+			if (node->value.decl.name != NULL) {
+				free(node->value.decl.name);
+				node->value.decl.name = NULL;
+			}
+			break;
 		case M_PRINT:
 			if (node->value.print.yarn != NULL) {
 				free(node->value.print.yarn);

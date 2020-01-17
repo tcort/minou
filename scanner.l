@@ -43,7 +43,8 @@ static char *uncolon(char *s) {
 
 letter [A-Za-z]
 digit [0-9]
-label {letter}({letter}|{digit})*
+underscore "_"
+id {letter}({letter}|{digit}|{underscore})*
 
 numbar {digit}+\.{digit}+
 
@@ -62,7 +63,7 @@ ws ({tab}|{space})
 %x OBTW
 
 %%
-
+"I HAS A"	{ return M_I_HAS_A; }
 KTHXBYE		{ return M_KTHXBYE; }
 VISIBLE		{ return M_VISIBLE; }
 
@@ -85,6 +86,11 @@ HAI		{ return M_HAI; }
 			yylval.yarn[strlen(yylval.yarn)-1] = '\0';
 			yylval.yarn = uncolon(yylval.yarn);
 			return M_YARN;
+		}
+
+{id}		{
+			yylval.id = strdup(yytext);
+			return M_ID;
 		}
 
 {eol}		{ lineno++; break; }

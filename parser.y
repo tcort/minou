@@ -25,13 +25,14 @@ int yyerror(char* str);
 %}
  
 %union {
+	char *id;
 	ast_node_t *ast;
 	double numbar;
 	char *yarn;
 };
 
 /* keywords */
-%token M_HAI M_KTHXBYE
+%token M_HAI M_KTHXBYE M_I_HAS_A
 
 /* functions */
 %token M_VISIBLE
@@ -39,11 +40,12 @@ int yyerror(char* str);
 /* special chars */
 %token M_EXCLAIM M_COMMA
 
+%token <id> M_ID
 %token <numbar> M_NUMBAR
 %token <yarn> M_YARN
 
 %type <numbar> welcome
-%type <ast> program print stmt block
+%type <ast> program print decl stmt block
 
 %%
 
@@ -66,6 +68,13 @@ block	: block stmt	{
 	;
 
 stmt	: print { $$ = $1; }
+	| decl { $$ = $1; }
+	;
+
+decl	: M_I_HAS_A M_ID 	{
+						$$ = ast_node_alloc(M_DECL);
+						$$->value.decl.name  = $2;
+				}
 	;
 
 print	: M_VISIBLE M_YARN M_EXCLAIM 	{

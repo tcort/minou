@@ -1,7 +1,7 @@
 #ifndef AST_H
 #define AST_H
 
-enum ast_type { M_PROGRAM, M_PRINT };
+enum ast_type { M_PROGRAM, M_PRINT, M_DECL };
 typedef enum ast_type ast_type_t; 
 
 
@@ -20,10 +20,15 @@ struct program_value {
 typedef struct program_value program_value_t;
 
 
+struct decl_value {
+	char *name;
+};
+typedef struct decl_value decl_value_t;
 
 union ast_value {
 	program_value_t program;
 	print_value_t print;
+	decl_value_t decl;
 };
 typedef union ast_value ast_value_t;
 
