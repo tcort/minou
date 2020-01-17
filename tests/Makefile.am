@@ -1,7 +1,8 @@
 
 SHELL_TESTS = \
 	hello.sh	\
-	empty.sh
+	empty.sh	\
+	comments.sh
 
 TESTS = $(SHELL_TESTS)
 
@@ -18,4 +19,5 @@ CLEANFILES = \
 
 EXTRA_DIST = $(SHELL_TESTS) run.sh 	\
 	hello.lol	hello.ex	\
-	empty.lol
+	empty.lol			\
+	comments.lol	comments.ex

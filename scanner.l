@@ -50,6 +50,8 @@ numbar {digit}+\.{digit}+
 
 yarn \"(\\.|[^"\\])*\"
 
+
+comma ","
 newline "\n"
 carriagereturn "\r"
 tab "\t"
@@ -77,7 +79,6 @@ BTW{ws}[^\r\n]*	{ break; }
 HAI		{ return M_HAI; }
 
 "!"		{ return M_EXCLAIM; }
-","		{ return M_COMMA; }
 
 {numbar}	{ yylval.numbar = atof(yytext); return M_NUMBAR; }
 
@@ -92,6 +93,8 @@ HAI		{ return M_HAI; }
 			yylval.id = strdup(yytext);
 			return M_ID;
 		}
+
+{comma}		{ break; }
 
 {eol}		{ lineno++; break; }
 
