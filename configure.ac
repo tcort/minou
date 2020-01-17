@@ -1,5 +1,5 @@
 AC_PREREQ(2.59)
-AC_INIT([tcutils], [0.0.0], [linuxgeek@gmail.com])
+AC_INIT([minou], [0.0.0], [linuxgeek@gmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 AC_LANG([C])
