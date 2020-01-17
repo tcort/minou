@@ -16,6 +16,7 @@ void interpret(ast_node_t *node) {
 					cur->value.print.newline ? "%s\n" : "%s",
 					cur->value.print.yarn
 				);
+				break;
 		}
 	}
 }
