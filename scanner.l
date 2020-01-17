@@ -47,6 +47,7 @@ underscore "_"
 id {letter}({letter}|{digit}|{underscore})*
 
 numbar {digit}+\.{digit}+
+numbr {digit}+
 
 yarn \"(\\.|[^"\\])*\"
 
@@ -65,6 +66,14 @@ ws ({tab}|{space})
 %x OBTW
 
 %%
+"SUM OF"	{ return M_SUM_OF; }
+"DIFF OF"	{ return M_DIFF_OF; }
+"PRODUKT OF"	{ return M_PRODUKT_OF; }
+"QUOSHUNT OF"	{ return M_QUOSHUNT_OF; }
+"MOD OF"	{ return M_MOD_OF; }
+"BIGGR OF"	{ return M_BIGGR_OF; }
+"SMALLR OF"	{ return M_SMALLR_OF; }
+
 "I HAS A"	{ return M_I_HAS_A; }
 KTHXBYE		{ return M_KTHXBYE; }
 VISIBLE		{ return M_VISIBLE; }
@@ -78,9 +87,12 @@ BTW{ws}[^\r\n]*	{ break; }
 
 HAI		{ return M_HAI; }
 
+AN		{ return M_AN; }
+
 "!"		{ return M_EXCLAIM; }
 
 {numbar}	{ yylval.numbar = atof(yytext); return M_NUMBAR; }
+{numbr}		{ yylval.numbr = atoi(yytext); return M_NUMBR; }
 
 {yarn}		{
 			yylval.yarn = strdup(yytext+1);

@@ -27,12 +27,16 @@ int yyerror(char* str);
 %union {
 	char *id;
 	ast_node_t *ast;
+	int numbr;
 	double numbar;
 	char *yarn;
 };
 
 /* keywords */
-%token M_HAI M_KTHXBYE M_I_HAS_A
+%token M_HAI M_KTHXBYE
+
+%token M_I_HAS_A
+%token M_SUM_OF M_DIFF_OF M_PRODUKT_OF M_QUOSHUNT_OF M_MOD_OF M_BIGGR_OF M_SMALLR_OF M_AN
 
 /* functions */
 %token M_VISIBLE
@@ -41,6 +45,7 @@ int yyerror(char* str);
 %token M_EXCLAIM M_COMMA
 
 %token <id> M_ID
+%token <numbr> M_NUMBR
 %token <numbar> M_NUMBAR
 %token <yarn> M_YARN
 
