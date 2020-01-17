@@ -45,17 +45,19 @@ int yyerror(char* str);
 %token <yarn> M_YARN
 
 %type <numbar> welcome
-%type <ast> program print decl stmt block
+%type <ast> print decl stmt block
 
 %%
 
 program : welcome block goodbye {
-					$$ = ast_node_alloc(M_PROGRAM);
-					$$->value.program.language_version = $1;
-					$$->next = $2;
-					interpret($$);
-					ast_node_free($$);
+					ast_node_t *program;
+					program = ast_node_alloc(M_PROGRAM);
+					program->value.program.language_version = $1;
+					program->next = $2;
+					interpret(program);
+					ast_node_free(program);
 				}
+	| welcome goodbye
 	;
 
 block	: block stmt	{

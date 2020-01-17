@@ -1,6 +1,7 @@
 
 SHELL_TESTS = \
-	hello.sh
+	hello.sh	\
+	empty.sh
 
 TESTS = $(SHELL_TESTS)
 
@@ -12,7 +13,9 @@ TESTS_ENVIRONMENT = \
 	RUNNER=$(top_srcdir)/tests/run.sh
 
 CLEANFILES = \
-	hello.out
+	hello.out	\
+	empty.lol
 
-EXTRA_DIST = $(SHELL_TESTS) run.sh \
-	hello.lol	hello.ex
+EXTRA_DIST = $(SHELL_TESTS) run.sh 	\
+	hello.lol	hello.ex	\
+	empty.lol
