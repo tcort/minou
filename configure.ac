@@ -6,6 +6,7 @@ AC_LANG([C])
 AC_PROG_CC
 AC_PROG_LEX
 AC_PROG_YACC
+AC_HEADER_STDC
 AC_CONFIG_HEADERS([config.h:config.in])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile tests/Makefile])
 AC_OUTPUT

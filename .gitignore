@@ -2,7 +2,6 @@
 Makefile
 Makefile.in
 aclocal.m4
-ast.o
 autom4te.cache/
 compile
 config.h
@@ -13,14 +12,16 @@ config.status
 configure
 depcomp
 install-sh
-interpret.o
 minou
 missing
 parser.c
 parser.h
-parser.o
 scanner.c
-scanner.o
 stamp-h1
+test-driver
 ylwrap
 *.tar.gz
+*.log
+*.o
+*.out
+*.trs
